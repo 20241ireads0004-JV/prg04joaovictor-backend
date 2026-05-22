@@ -1,6 +1,6 @@
-package main.java.br.com.ifba.br.usuario.repository;
+package br.com.ifba.usuario.repository;
 
-import main.java.br.com.ifba.br.usuario.entity.Usuario;
+import br.com.ifba.usuario.entity.Usuario;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

@@ -1,8 +1,10 @@
-package main.java.br.com.ifba.br.usuario.service;
+package br.com.ifba.usuario.service;
 
+import br.com.ifba.infraestructure.exception.BusinessException;
+import br.com.ifba.infraestructure.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
-import main.java.br.com.ifba.br.usuario.entity.Usuario;
-import main.java.br.com.ifba.br.usuario.repository.UsuarioRepository;
+import br.com.ifba.usuario.entity.Usuario;
+import br.com.ifba.usuario.repository.UsuarioRepository;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,6 +71,15 @@ public class UsuarioService implements UsuarioIService {
 
         // Retorna todos os usuários cadastrados
         return usuarioRepository.findAll();
+    }
+
+    @Override
+    public Usuario findById(Long id){
+
+        return usuarioRepository.findById(id)
+                .orElseThrow(() ->
+                        new RuntimeException("Usuário não encontrado com o ID: " + id)
+                );
     }
 
     @Override

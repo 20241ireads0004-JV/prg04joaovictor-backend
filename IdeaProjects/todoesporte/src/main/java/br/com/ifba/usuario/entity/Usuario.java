@@ -1,10 +1,13 @@
-package main.java.br.com.ifba.br.usuario.entity;
+package br.com.ifba.usuario.entity;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import main.java.br.com.ifba.br.infraestructure.entity.PersistenceEntity;
+import br.com.ifba.infraestructure.entity.PersistenceEntity;
 
 import java.io.Serializable;
 

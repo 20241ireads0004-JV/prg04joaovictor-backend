@@ -1,6 +1,6 @@
-package main.java.br.com.ifba.br.usuario.service;
+package br.com.ifba.usuario.service;
 
-import main.java.br.com.ifba.br.usuario.entity.Usuario;
+import br.com.ifba.usuario.entity.Usuario;
 
 import java.util.List;
 
@@ -20,6 +20,12 @@ public interface UsuarioIService {
      * os usuários cadastrados.
      */
     List<Usuario> findAll();
+
+    /*
+     * Retorna o usuário que contém
+     * o ID informado
+     */
+    Usuario findById(Long id);
 
     /*
      * Remove um usuário do banco
