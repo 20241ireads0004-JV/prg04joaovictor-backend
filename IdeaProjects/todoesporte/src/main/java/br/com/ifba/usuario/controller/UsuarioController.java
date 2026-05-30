@@ -5,6 +5,7 @@ import br.com.ifba.usuario.dto.UsuarioGetResponseDto;
 import br.com.ifba.usuario.dto.UsuarioPostRequestDto;
 import br.com.ifba.usuario.dto.UsuarioPutRequestDto;
 import br.com.ifba.usuario.entity.Usuario;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import br.com.ifba.usuario.service.UsuarioIService;
 import org.springframework.http.HttpStatus;
@@ -39,7 +40,7 @@ public class UsuarioController {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<UsuarioGetResponseDto> save(
-            @RequestBody UsuarioPostRequestDto requestDto
+            @RequestBody @Valid UsuarioPostRequestDto requestDto
     ) {
         Usuario usuario = ObjectMapperUtil.map(
                 requestDto,
@@ -99,7 +100,7 @@ public class UsuarioController {
     )
     public ResponseEntity<UsuarioGetResponseDto> update(
             @PathVariable Long id,
-            @RequestBody UsuarioPutRequestDto dto
+            @RequestBody @Valid UsuarioPutRequestDto dto
     ) {
         Usuario usuario = ObjectMapperUtil.map(
                 dto,
