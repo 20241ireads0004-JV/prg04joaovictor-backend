@@ -9,6 +9,8 @@ import br.com.ifba.usuario.repository.UsuarioRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -63,14 +65,14 @@ public class UsuarioService implements UsuarioIService {
     }
 
     @Override
-    public List<Usuario> findAll() {
+    public Page<Usuario> findAll(Pageable pageable) {
 
         logger.info(
                 "[SERVICE] Buscando todos os usuários."
         );
 
-        // Retorna todos os usuários cadastrados
-        return usuarioRepository.findAll();
+        // Retorna todos os usuários cadastrados usando paginação
+        return usuarioRepository.findAll(pageable);
     }
 
     @Override

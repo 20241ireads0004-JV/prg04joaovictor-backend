@@ -1,6 +1,8 @@
 package br.com.ifba.usuario.service;
 
 import br.com.ifba.usuario.entity.Usuario;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -17,9 +19,9 @@ public interface UsuarioIService {
 
     /*
      * Retorna uma lista com todos
-     * os usuários cadastrados.
+     * os usuários cadastrados usando paginação.
      */
-    List<Usuario> findAll();
+    Page<Usuario> findAll(Pageable pageable);
 
     /*
      * Retorna o usuário que contém

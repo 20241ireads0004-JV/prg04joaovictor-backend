@@ -8,6 +8,8 @@ import br.com.ifba.usuario.entity.Usuario;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import br.com.ifba.usuario.service.UsuarioIService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -80,12 +82,19 @@ public class UsuarioController {
             path = "/findAll",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public ResponseEntity<List<UsuarioGetResponseDto>> findAll() {
+    public ResponseEntity<Page<UsuarioGetResponseDto>> findAll(
+            Pageable pageable
+    ) {
 
-        List<UsuarioGetResponseDto> responseDto = ObjectMapperUtil.mapAll(
-                usuarioService.findAll(),
-                UsuarioGetResponseDto.class
-        );
+        //Utilização de paginação
+        Page<UsuarioGetResponseDto> responseDto =
+                usuarioService.findAll(pageable)
+                        .map(usuario ->
+                                ObjectMapperUtil.map(
+                                        usuario,
+                                        UsuarioGetResponseDto.class
+                                )
+                        );
         return ResponseEntity.status(HttpStatus.OK)
                 .body(responseDto);
     }
