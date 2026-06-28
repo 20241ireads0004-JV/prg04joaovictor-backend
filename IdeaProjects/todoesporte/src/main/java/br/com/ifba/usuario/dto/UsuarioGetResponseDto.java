@@ -19,4 +19,10 @@ public class UsuarioGetResponseDto {
     @JsonProperty(value = "login")
     private String login;
 
+    @JsonProperty(value = "telefone")
+    private String telefone;
+
+    @JsonProperty(value = "status")
+    private Boolean status;
+
 }

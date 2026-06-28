@@ -1,9 +1,7 @@
 package br.com.ifba.usuario.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -36,4 +34,17 @@ public class UsuarioPutRequestDto implements Serializable {
     @Size(min = 8, max = 20, message = "A senha deve ter entre 8 e 20 caracteres")
     @JsonProperty("senha")
     private String senha;
+
+    @NotBlank(message = "O telefone é obrigatório")
+    @Pattern(
+            regexp = "^\\(?\\d{2}\\)?\\s?9?\\d{4}-?\\d{4}$",
+            message = "Telefone inválido"
+    )
+    @JsonProperty("telefone")
+    private String telefone;
+
+    @NotNull(message = "O status é obrigatório")
+    @JsonProperty("status")
+    private Boolean status;
+
 }

@@ -122,14 +122,13 @@ public class UsuarioService implements UsuarioIService {
                 id
         );
 
-        // Busca o usuário no banco
-        Usuario usuarioExistente =
-                usuarioRepository.findById(id)
-                        .orElseThrow(() ->
-                                new ResourceNotFoundException(
-                                        "Usuário não encontrado."
-                                )
-                        );
+        // Busca o usuário existente
+        Usuario usuarioExistente = usuarioRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Usuário não encontrado."
+                        )
+                );
 
         /*
          * Verifica se outro usuário já utiliza
@@ -169,15 +168,17 @@ public class UsuarioService implements UsuarioIService {
             );
         }
 
-        // Atualiza os dados do usuário
+        // Atualiza os dados permitidos
         usuarioExistente.setNome(usuario.getNome());
         usuarioExistente.setEmail(usuario.getEmail());
         usuarioExistente.setLogin(usuario.getLogin());
         usuarioExistente.setSenha(usuario.getSenha());
+        usuarioExistente.setTelefone(usuario.getTelefone());
+        usuarioExistente.setStatus(usuario.getStatus());
 
-        // Salva as alterações no banco
-        Usuario usuarioAtualizado =
-                usuarioRepository.save(usuarioExistente);
+        // Não atualiza dataCadastro
+
+        Usuario usuarioAtualizado = usuarioRepository.save(usuarioExistente);
 
         logger.info(
                 "[SERVICE] Usuário atualizado com sucesso."
