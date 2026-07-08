@@ -16,6 +16,9 @@ import java.time.LocalTime;
 @AllArgsConstructor
 public class PartidaGetResponseDto implements Serializable {
 
+    @JsonProperty("id")
+    private Long id;
+
     @JsonProperty("data")
     private LocalDate data;
 

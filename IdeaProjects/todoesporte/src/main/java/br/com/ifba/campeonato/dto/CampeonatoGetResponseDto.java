@@ -15,6 +15,9 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class CampeonatoGetResponseDto implements Serializable {
 
+    @JsonProperty("id")
+    private Long id;
+
     @JsonProperty("nome")
     private String nome;
 
