@@ -1,20 +1,23 @@
 package br.com.ifba.equipe.entity;
 
 import br.com.ifba.atleta.entity.Atleta;
+import br.com.ifba.classificacao.entity.Classificacao;
 import br.com.ifba.infraestructure.entity.PersistenceEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id"
+)
 @Entity
 @Table(name = "equipes")
 @Data
@@ -26,7 +29,17 @@ public class Equipe extends PersistenceEntity implements Serializable {
     @Column(name = "nome", nullable = false, unique = true)
     private String nome;
 
-    @ManyToMany(mappedBy = "equipes")
-    private List<Atleta> atletas = new ArrayList<>();
+    // equipe <-> atletas
+    @ManyToMany
+    @JoinTable(
+            name = "equipe_atleta",
+            joinColumns = @JoinColumn(name = "equipe_id"),
+            inverseJoinColumns = @JoinColumn(name = "atleta_id")
+    )
+    private List<Atleta> atletas;
+
+    // equipe possui classificações
+    @OneToMany(mappedBy = "equipe")
+    private List<Classificacao> classificacoes;
 
 }

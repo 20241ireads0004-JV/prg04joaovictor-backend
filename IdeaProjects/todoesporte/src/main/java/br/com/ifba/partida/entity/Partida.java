@@ -1,5 +1,8 @@
 package br.com.ifba.partida.entity;
+import br.com.ifba.campeonato.entity.Campeonato;
 import br.com.ifba.infraestructure.entity.PersistenceEntity;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -10,6 +13,10 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id"
+)
 @Entity
 @Table(name = "partidas")
 @Data
@@ -32,4 +39,8 @@ public class Partida extends PersistenceEntity implements Serializable{
 
     @Column(name = "status", nullable = false)
     private String status;
+
+    @ManyToOne
+    @JoinColumn(name = "campeonato_id")
+    private Campeonato campeonato;
 }

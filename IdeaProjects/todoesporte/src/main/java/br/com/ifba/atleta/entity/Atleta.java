@@ -5,12 +5,18 @@ import br.com.ifba.equipe.entity.Equipe;
 import br.com.ifba.estatistica.entity.Estatistica;
 import br.com.ifba.grupoesportivo.entity.GrupoEsportivo;
 import br.com.ifba.usuario.entity.Usuario;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id"
+)
 @Entity
 @Table(name = "atletas")
 @Data

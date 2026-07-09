@@ -2,6 +2,8 @@ package br.com.ifba.avaliacao.entity;
 
 import br.com.ifba.atleta.entity.Atleta;
 import br.com.ifba.infraestructure.entity.PersistenceEntity;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,6 +13,10 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 import java.time.LocalDate;
 
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id"
+)
 @Entity
 @Table(name = "avaliacoes")
 @Data
