@@ -35,6 +35,7 @@ C:\Users\user\IdeaProjects\todoesporte\src\main\java\br\com\ifba\grupoesportivo\
 C:\Users\user\IdeaProjects\todoesporte\src\main\java\br\com\ifba\grupoesportivo\repository\GrupoEsportivoRepository.java
 C:\Users\user\IdeaProjects\todoesporte\src\main\java\br\com\ifba\grupoesportivo\service\GrupoEsportivoIService.java
 C:\Users\user\IdeaProjects\todoesporte\src\main\java\br\com\ifba\grupoesportivo\service\GrupoEsportivoService.java
+C:\Users\user\IdeaProjects\todoesporte\src\main\java\br\com\ifba\infraestructure\config\WebConfig.java
 C:\Users\user\IdeaProjects\todoesporte\src\main\java\br\com\ifba\infraestructure\entity\PersistenceEntity.java
 C:\Users\user\IdeaProjects\todoesporte\src\main\java\br\com\ifba\infraestructure\exception\ApiExceptionHandler.java
 C:\Users\user\IdeaProjects\todoesporte\src\main\java\br\com\ifba\infraestructure\exception\BusinessException.java
@@ -47,7 +48,7 @@ C:\Users\user\IdeaProjects\todoesporte\src\main\java\br\com\ifba\local\entity\Lo
 C:\Users\user\IdeaProjects\todoesporte\src\main\java\br\com\ifba\local\repository\LocalRepository.java
 C:\Users\user\IdeaProjects\todoesporte\src\main\java\br\com\ifba\local\service\LocalIService.java
 C:\Users\user\IdeaProjects\todoesporte\src\main\java\br\com\ifba\local\service\LocalService.java
-C:\Users\user\IdeaProjects\todoesporte\src\main\java\br\com\ifba\Main.java
+C:\Users\user\IdeaProjects\todoesporte\src\main\java\br\com\ifba\TodoEsporteApplication.java
 C:\Users\user\IdeaProjects\todoesporte\src\main\java\br\com\ifba\usuario\controller\UsuarioController.java
 C:\Users\user\IdeaProjects\todoesporte\src\main\java\br\com\ifba\usuario\dto\LoginRequestDto.java
 C:\Users\user\IdeaProjects\todoesporte\src\main\java\br\com\ifba\usuario\dto\LoginResponseDto.java
@@ -58,8 +59,3 @@ C:\Users\user\IdeaProjects\todoesporte\src\main\java\br\com\ifba\usuario\entity\
 C:\Users\user\IdeaProjects\todoesporte\src\main\java\br\com\ifba\usuario\repository\UsuarioRepository.java
 C:\Users\user\IdeaProjects\todoesporte\src\main\java\br\com\ifba\usuario\service\UsuarioIService.java
 C:\Users\user\IdeaProjects\todoesporte\src\main\java\br\com\ifba\usuario\service\UsuarioService.java
-C:\Users\user\IdeaProjects\todoesporte\src\main\java\br\com\ifba\webclient\config\WebClientConfig.java
-C:\Users\user\IdeaProjects\todoesporte\src\main\java\br\com\ifba\webclient\controller\ApiExternaController.java
-C:\Users\user\IdeaProjects\todoesporte\src\main\java\br\com\ifba\webclient\dto\PostApiDto.java
-C:\Users\user\IdeaProjects\todoesporte\src\main\java\br\com\ifba\webclient\service\ApiExternaIService.java
-C:\Users\user\IdeaProjects\todoesporte\src\main\java\br\com\ifba\webclient\service\ApiExternaService.java

@@ -17,11 +17,11 @@ import java.time.LocalDate;
 
 @Entity
 @Table(name = "usuarios")
-@Inheritance(strategy = InheritanceType.JOINED)
+@Inheritance(strategy = InheritanceType.JOINED) // Cria tabelas separadas e interligadas no PostgreSQL
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode(callSuper = false)
+@EqualsAndHashCode(callSuper = true) // Considera o atributo id da PersistenceEntity nos metodos equals/hashCode
 public class Usuario extends PersistenceEntity implements UserDetails, Serializable {
 
     @Column(name = "nome", nullable = false)
