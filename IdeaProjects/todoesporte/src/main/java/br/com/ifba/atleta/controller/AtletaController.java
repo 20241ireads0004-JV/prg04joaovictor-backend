@@ -4,7 +4,7 @@ import br.com.ifba.atleta.dto.AtletaGetResponseDto;
 import br.com.ifba.atleta.dto.AtletaPostRequestDto;
 import br.com.ifba.atleta.entity.Atleta;
 import br.com.ifba.atleta.service.AtletaIService;
-import br.com.ifba.infraestructure.util.ObjectMapperUtil;
+import br.com.ifba.infrastructure.util.ObjectMapperUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

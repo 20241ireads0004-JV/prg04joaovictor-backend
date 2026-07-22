@@ -1,7 +1,7 @@
 package br.com.ifba.usuario.service;
 
-import br.com.ifba.infraestructure.exception.BusinessException;
-import br.com.ifba.infraestructure.exception.ResourceNotFoundException;
+import br.com.ifba.infrastructure.exception.BusinessException;
+import br.com.ifba.infrastructure.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import br.com.ifba.usuario.entity.Usuario;
 import br.com.ifba.usuario.repository.UsuarioRepository;
@@ -13,8 +13,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor

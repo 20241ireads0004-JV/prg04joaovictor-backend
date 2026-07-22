@@ -4,7 +4,7 @@ import br.com.ifba.grupoesportivo.dto.GrupoEsportivoGetResponseDto;
 import br.com.ifba.grupoesportivo.dto.GrupoEsportivoPostRequestDto;
 import br.com.ifba.grupoesportivo.entity.GrupoEsportivo;
 import br.com.ifba.grupoesportivo.service.GrupoEsportivoIService;
-import br.com.ifba.infraestructure.util.ObjectMapperUtil;
+import br.com.ifba.infrastructure.util.ObjectMapperUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

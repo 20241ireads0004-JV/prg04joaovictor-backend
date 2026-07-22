@@ -2,8 +2,8 @@ package br.com.ifba.atleta.service;
 
 import br.com.ifba.atleta.entity.Atleta;
 import br.com.ifba.atleta.repository.AtletaRepository;
-import br.com.ifba.infraestructure.exception.BusinessException;
-import br.com.ifba.infraestructure.exception.ResourceNotFoundException;
+import br.com.ifba.infrastructure.exception.BusinessException;
+import br.com.ifba.infrastructure.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

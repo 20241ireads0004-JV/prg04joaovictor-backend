@@ -4,7 +4,7 @@ import br.com.ifba.esporte.dto.EsporteGetResponseDto;
 import br.com.ifba.esporte.dto.EsportePostRequestDto;
 import br.com.ifba.esporte.entity.Esporte;
 import br.com.ifba.esporte.service.EsporteIService;
-import br.com.ifba.infraestructure.util.ObjectMapperUtil;
+import br.com.ifba.infrastructure.util.ObjectMapperUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

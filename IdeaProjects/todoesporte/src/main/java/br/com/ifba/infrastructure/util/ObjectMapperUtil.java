@@ -1,4 +1,4 @@
-package br.com.ifba.infraestructure.util;
+package br.com.ifba.infrastructure.util;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;

@@ -2,8 +2,8 @@ package br.com.ifba.grupoesportivo.service;
 
 import br.com.ifba.grupoesportivo.entity.GrupoEsportivo;
 import br.com.ifba.grupoesportivo.repository.GrupoEsportivoRepository;
-import br.com.ifba.infraestructure.exception.BusinessException;
-import br.com.ifba.infraestructure.exception.ResourceNotFoundException;
+import br.com.ifba.infrastructure.exception.BusinessException;
+import br.com.ifba.infrastructure.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

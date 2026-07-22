@@ -1,6 +1,6 @@
 // src/main/java/com/todoesporte/config/WebConfig.java
 
-package br.com.ifba.infraestructure.config;
+package br.com.ifba.infrastructure.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;

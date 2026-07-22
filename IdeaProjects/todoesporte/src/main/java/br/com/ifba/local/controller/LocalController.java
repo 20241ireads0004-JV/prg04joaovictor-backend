@@ -1,6 +1,6 @@
 package br.com.ifba.local.controller;
 
-import br.com.ifba.infraestructure.util.ObjectMapperUtil;
+import br.com.ifba.infrastructure.util.ObjectMapperUtil;
 import br.com.ifba.local.dto.LocalGetResponseDto;
 import br.com.ifba.local.dto.LocalPostRequestDto;
 import br.com.ifba.local.entity.Local;

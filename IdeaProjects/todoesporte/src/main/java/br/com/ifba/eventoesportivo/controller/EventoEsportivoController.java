@@ -4,7 +4,7 @@ import br.com.ifba.eventoesportivo.dto.EventoEsportivoGetResponseDto;
 import br.com.ifba.eventoesportivo.dto.EventoEsportivoPostRequestDto;
 import br.com.ifba.eventoesportivo.entity.EventoEsportivo;
 import br.com.ifba.eventoesportivo.service.EventoEsportivoIService;
-import br.com.ifba.infraestructure.util.ObjectMapperUtil;
+import br.com.ifba.infrastructure.util.ObjectMapperUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

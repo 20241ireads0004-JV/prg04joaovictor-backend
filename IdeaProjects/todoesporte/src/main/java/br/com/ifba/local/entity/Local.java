@@ -1,6 +1,6 @@
 package br.com.ifba.local.entity;
 import br.com.ifba.eventoesportivo.entity.EventoEsportivo;
-import br.com.ifba.infraestructure.entity.PersistenceEntity;
+import br.com.ifba.infrastructure.entity.PersistenceEntity;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.Column;

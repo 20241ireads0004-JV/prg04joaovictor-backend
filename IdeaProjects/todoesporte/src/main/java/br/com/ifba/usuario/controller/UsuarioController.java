@@ -1,6 +1,6 @@
 package br.com.ifba.usuario.controller;
 
-import br.com.ifba.infraestructure.util.ObjectMapperUtil;
+import br.com.ifba.infrastructure.util.ObjectMapperUtil;
 import br.com.ifba.usuario.dto.LoginRequestDto;
 import br.com.ifba.usuario.dto.LoginResponseDto;
 import br.com.ifba.usuario.dto.UsuarioGetResponseDto;

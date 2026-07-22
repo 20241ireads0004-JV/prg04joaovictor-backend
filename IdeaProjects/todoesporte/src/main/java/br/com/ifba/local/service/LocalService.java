@@ -1,7 +1,7 @@
 package br.com.ifba.local.service;
 
-import br.com.ifba.infraestructure.exception.BusinessException;
-import br.com.ifba.infraestructure.exception.ResourceNotFoundException;
+import br.com.ifba.infrastructure.exception.BusinessException;
+import br.com.ifba.infrastructure.exception.ResourceNotFoundException;
 import br.com.ifba.local.entity.Local;
 import br.com.ifba.local.repository.LocalRepository;
 import lombok.RequiredArgsConstructor;
