@@ -7,9 +7,11 @@ import br.com.ifba.usuario.dto.UsuarioGetResponseDto;
 import br.com.ifba.usuario.dto.UsuarioPostRequestDto;
 import br.com.ifba.usuario.dto.UsuarioPutRequestDto;
 import br.com.ifba.usuario.entity.Usuario;
+import br.com.ifba.usuario.service.UsuarioIService;
+
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import br.com.ifba.usuario.service.UsuarioIService;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -18,7 +20,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @RestController
 @RequestMapping(path = "/usuarios")
@@ -27,17 +28,8 @@ public class UsuarioController {
 
     private final UsuarioIService usuarioService;
 
-    private ObjectMapperUtil objectMapperUtil;
-
-    /**
-     * @author João Victor
-     * @apiNote Endpoint criado desde a versão V1.0.1
-     * Lista de todos os usuários cadastrados na base de dados.
-     * @return uma entidade de resposta genérica.
-     * **/
-
     // =========================
-    // POST
+    // POST - SALVAR USUÁRIO
     // =========================
     @PostMapping(
             path = "/save",
@@ -53,7 +45,9 @@ public class UsuarioController {
         );
         usuario.setStatus(true);
         usuario.setDataCadastro(LocalDate.now());
+
         Usuario usuarioSalvo = usuarioService.save(usuario);
+
         UsuarioGetResponseDto responseDto = ObjectMapperUtil.map(
                 usuarioSalvo,
                 UsuarioGetResponseDto.class
@@ -81,7 +75,7 @@ public class UsuarioController {
     }
 
     // =========================
-    // GET ALL
+    // GET ALL (COM PAGINAÇÃO)
     // =========================
     @GetMapping(
             path = "/findAll",
@@ -90,8 +84,6 @@ public class UsuarioController {
     public ResponseEntity<Page<UsuarioGetResponseDto>> findAll(
             Pageable pageable
     ) {
-
-        //Utilização de paginação
         Page<UsuarioGetResponseDto> responseDto =
                 usuarioService.findAll(pageable)
                         .map(usuario ->
@@ -105,7 +97,7 @@ public class UsuarioController {
     }
 
     // =========================
-    // PUT
+    // PUT - ATUALIZAR
     // =========================
     @PutMapping(
             path = "/update/{id}",
@@ -131,7 +123,7 @@ public class UsuarioController {
     }
 
     // =========================
-    // DELETE
+    // DELETE - REMOVER
     // =========================
     @DeleteMapping(
             path = "/delete/{id}",
@@ -144,24 +136,25 @@ public class UsuarioController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT)
                 .build();
     }
+
+    // =========================
+    // POST - LOGIN / AUTENTICAÇÃO
+    // =========================
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDto> login(
             @RequestBody LoginRequestDto dto
     ) {
+        Usuario usuario = usuarioService.autenticar(
+                dto.getLogin(),
+                dto.getSenha()
+        );
 
-        Usuario usuario =
-                usuarioService.autenticar(
-                        dto.getLogin(),
-                        dto.getSenha()
-                );
-
-        LoginResponseDto response =
-                new LoginResponseDto(
-                        usuario.getId(),
-                        usuario.getNome(),
-                        usuario.getLogin(),
-                        usuario.getEmail()
-                );
+        LoginResponseDto response = new LoginResponseDto(
+                usuario.getId(),
+                usuario.getNome(),
+                usuario.getLogin(),
+                usuario.getEmail()
+        );
 
         return ResponseEntity.ok(response);
     }

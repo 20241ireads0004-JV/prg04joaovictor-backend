@@ -1,7 +1,6 @@
 package br.com.ifba.equipe.entity;
 
 import br.com.ifba.atleta.entity.Atleta;
-import br.com.ifba.classificacao.entity.Classificacao;
 import br.com.ifba.infraestructure.entity.PersistenceEntity;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
@@ -37,9 +36,5 @@ public class Equipe extends PersistenceEntity implements Serializable {
             inverseJoinColumns = @JoinColumn(name = "atleta_id")
     )
     private List<Atleta> atletas;
-
-    // equipe possui classificações
-    @OneToMany(mappedBy = "equipe")
-    private List<Classificacao> classificacoes;
 
 }

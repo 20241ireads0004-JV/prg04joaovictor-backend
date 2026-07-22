@@ -1,12 +1,13 @@
 package br.com.ifba.grupoesportivo.entity;
 
 import br.com.ifba.atleta.entity.Atleta;
-import br.com.ifba.campeonato.entity.Campeonato;
 import br.com.ifba.esporte.entity.Esporte;
 import br.com.ifba.eventoesportivo.entity.EventoEsportivo;
 import br.com.ifba.infraestructure.entity.PersistenceEntity;
+
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -38,26 +39,16 @@ public class GrupoEsportivo extends PersistenceEntity implements Serializable {
     @Column(name = "data_criacao", nullable = false)
     private LocalDate dataCriacao;
 
-    // muitos grupos -> um esporte
+    // Muitos grupos -> Um esporte
     @ManyToOne
     @JoinColumn(name = "esporte_id")
     private Esporte esporte;
 
-    // grupo -> eventos
+    // Grupo -> Eventos
     @OneToMany(mappedBy = "grupoEsportivo")
     private List<EventoEsportivo> eventos;
 
-    // grupo -> campeonatos
-    @OneToMany(mappedBy = "grupoEsportivo")
-    private List<Campeonato> campeonatos;
-
-    // grupo <-> atletas
-    @ManyToMany
-    @JoinTable(
-            name = "grupo_atleta",
-            joinColumns = @JoinColumn(name = "grupo_id"),
-            inverseJoinColumns = @JoinColumn(name = "atleta_id")
-    )
+    // Relacionamento Mapeado de Atletas (Atleta é o dono da relação)
+    @ManyToMany(mappedBy = "gruposEsportivos")
     private List<Atleta> atletas;
-
 }

@@ -1,8 +1,6 @@
 package br.com.ifba.atleta.entity;
 
-import br.com.ifba.avaliacao.entity.Avaliacao;
 import br.com.ifba.equipe.entity.Equipe;
-import br.com.ifba.estatistica.entity.Estatistica;
 import br.com.ifba.grupoesportivo.entity.GrupoEsportivo;
 import br.com.ifba.usuario.entity.Usuario;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
@@ -25,12 +23,6 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 public class Atleta extends Usuario {
 
-    @OneToOne(
-            cascade = CascadeType.ALL
-    )
-    @JoinColumn(name = "estatistica_id")
-    private Estatistica estatistica;
-
     @ManyToMany
     @JoinTable(
             name = "atletas_equipes",
@@ -47,16 +39,5 @@ public class Atleta extends Usuario {
     )
     private List<GrupoEsportivo> gruposEsportivos = new ArrayList<>();
 
-    @OneToMany(
-            mappedBy = "autor",
-            cascade = CascadeType.ALL
-    )
-    private List<Avaliacao> avaliacoesRealizadas = new ArrayList<>();
-
-    @OneToMany(
-            mappedBy = "avaliado",
-            cascade = CascadeType.ALL
-    )
-    private List<Avaliacao> avaliacoesRecebidas = new ArrayList<>();
 
 }
