@@ -12,7 +12,7 @@ public interface GrupoEsportivoIService {
      * Este método realiza a validação de
      * unicidade do nome antes de persistir.
      */
-    GrupoEsportivo save(GrupoEsportivo grupoEsportivo);
+    GrupoEsportivo save(GrupoEsportivo grupoEsportivo, Long administradorId);
 
     /*
      * Retorna uma lista com todos
@@ -41,4 +41,7 @@ public interface GrupoEsportivoIService {
      */
     GrupoEsportivo update(Long id, GrupoEsportivo grupoEsportivo);
 
+    // Novos métodos de permissão e associação
+    void solicitarEntrada(Long grupoId, Long atletaId);
+    void aceitarAtleta(Long grupoId, Long atletaId, Long adminIdLogado);
 }

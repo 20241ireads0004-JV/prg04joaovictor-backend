@@ -40,7 +40,7 @@ public class GrupoEsportivoPostRequestDto implements Serializable {
     @JsonProperty("dataCriacao")
     private LocalDate dataCriacao;
 
-    @JsonProperty("esporte")
+    @NotNull(message = "O ID do esporte é obrigatório.")
+    @JsonProperty("esporteId")
     private Long esporteId;
-
 }
