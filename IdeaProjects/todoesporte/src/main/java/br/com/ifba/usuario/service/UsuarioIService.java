@@ -44,4 +44,6 @@ public interface UsuarioIService {
      * - duplicidade de login
      */
     Usuario update(Long id, Usuario usuario);
+
+    Usuario autenticar(String login, String senha);
 }

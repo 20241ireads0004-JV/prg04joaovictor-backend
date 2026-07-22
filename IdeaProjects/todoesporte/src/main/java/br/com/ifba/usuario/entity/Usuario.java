@@ -6,7 +6,12 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import br.com.ifba.infraestructure.entity.PersistenceEntity;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.Collection;
+import java.util.List;
 import java.io.Serializable;
 import java.time.LocalDate;
 
@@ -17,7 +22,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-public class Usuario extends PersistenceEntity implements Serializable {
+public class Usuario extends PersistenceEntity implements UserDetails, Serializable {
 
     @Column(name = "nome", nullable = false)
     private String nome;
@@ -39,4 +44,43 @@ public class Usuario extends PersistenceEntity implements Serializable {
 
     @Column(name = "status", nullable = false)
     private Boolean status;
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+
+        return List.of(
+                new SimpleGrantedAuthority("ROLE_USER")
+        );
+
+    }
+
+    @Override
+    public String getPassword() {
+        return senha;
+    }
+
+    @Override
+    public String getUsername() {
+        return login;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return status;
+    }
 }

@@ -44,4 +44,9 @@ public class EventoEsportivoPostRequestDto implements Serializable {
     @JsonProperty("descricao")
     private String descricao;
 
+    @JsonProperty("local")
+    private Long localId;
+
+    @JsonProperty("grupo")
+    private Long grupoId;
 }

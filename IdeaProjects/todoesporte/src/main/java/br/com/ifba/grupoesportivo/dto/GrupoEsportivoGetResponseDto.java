@@ -1,5 +1,6 @@
 package br.com.ifba.grupoesportivo.dto;
 
+import br.com.ifba.esporte.dto.EsporteGetResponseDto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,4 +28,6 @@ public class GrupoEsportivoGetResponseDto implements Serializable {
     @JsonProperty("dataCriacao")
     private LocalDate dataCriacao;
 
+    @JsonProperty("esporte")
+    private EsporteGetResponseDto esporte;
 }

@@ -223,4 +223,18 @@ public class UsuarioService implements UsuarioIService {
             );
         }
     }
+
+    @Override
+    public Usuario autenticar(String login, String senha) {
+
+        Usuario usuario = usuarioRepository.findByLogin(login)
+                .orElseThrow(() ->
+                        new BusinessException("Login inválido."));
+
+        if (!usuario.getSenha().equals(senha)) {
+            throw new BusinessException("Senha inválida.");
+        }
+
+        return usuario;
+    }
 }

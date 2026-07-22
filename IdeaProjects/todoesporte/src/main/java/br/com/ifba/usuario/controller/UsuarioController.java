@@ -1,6 +1,8 @@
 package br.com.ifba.usuario.controller;
 
 import br.com.ifba.infraestructure.util.ObjectMapperUtil;
+import br.com.ifba.usuario.dto.LoginRequestDto;
+import br.com.ifba.usuario.dto.LoginResponseDto;
 import br.com.ifba.usuario.dto.UsuarioGetResponseDto;
 import br.com.ifba.usuario.dto.UsuarioPostRequestDto;
 import br.com.ifba.usuario.dto.UsuarioPutRequestDto;
@@ -15,6 +17,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -48,6 +51,8 @@ public class UsuarioController {
                 requestDto,
                 Usuario.class
         );
+        usuario.setStatus(true);
+        usuario.setDataCadastro(LocalDate.now());
         Usuario usuarioSalvo = usuarioService.save(usuario);
         UsuarioGetResponseDto responseDto = ObjectMapperUtil.map(
                 usuarioSalvo,
@@ -138,5 +143,26 @@ public class UsuarioController {
         usuarioService.delete(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT)
                 .build();
+    }
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponseDto> login(
+            @RequestBody LoginRequestDto dto
+    ) {
+
+        Usuario usuario =
+                usuarioService.autenticar(
+                        dto.getLogin(),
+                        dto.getSenha()
+                );
+
+        LoginResponseDto response =
+                new LoginResponseDto(
+                        usuario.getId(),
+                        usuario.getNome(),
+                        usuario.getLogin(),
+                        usuario.getEmail()
+                );
+
+        return ResponseEntity.ok(response);
     }
 }
