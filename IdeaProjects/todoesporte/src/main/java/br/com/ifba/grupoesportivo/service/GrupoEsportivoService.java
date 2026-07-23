@@ -10,6 +10,8 @@ import br.com.ifba.grupoesportivo.entity.GrupoEsportivo;
 import br.com.ifba.grupoesportivo.repository.GrupoEsportivoRepository;
 import br.com.ifba.infrastructure.exception.BusinessException;
 import br.com.ifba.infrastructure.exception.ResourceNotFoundException;
+import br.com.ifba.usuario.entity.Usuario;
+import br.com.ifba.usuario.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +32,8 @@ public class GrupoEsportivoService implements GrupoEsportivoIService {
     private final AdministradorRepository administradorRepository;
     private final AtletaRepository atletaRepository;
     private final EsporteRepository esporteRepository;
+    // Injeção do repositório base de usuários para fallback
+    private final UsuarioRepository usuarioRepository;
 
     @Override
     @Transactional
@@ -39,52 +43,54 @@ public class GrupoEsportivoService implements GrupoEsportivoIService {
         // 1. Valida se já existe um grupo com o mesmo nome
         validarNomeUnico(grupoEsportivo);
 
-        // 2. Busca o Esporte na base de dados pelo NOME selecionado
+        // 2. Busca o Esporte na base de dados pelo NOME
         Esporte esporte = esporteRepository.findByNome(esporteNome)
                 .orElseThrow(() -> new ResourceNotFoundException("Esporte '" + esporteNome + "' não encontrado."));
 
         // 3. Tenta encontrar o Administrador pelo ID.
-        // Se não encontrar na tabela de Administradores, copia os dados completos do Atleta
+        // Se não encontrar, tenta buscar em Atleta ou Usuario base e promove a Administrador
         Administrador admin = administradorRepository.findById(usuarioId)
                 .orElseGet(() -> {
-                    logger.info("[SERVICE] Utilizador ID {} não é administrador. Registando perfil de Administrador...", usuarioId);
+                    logger.info("[SERVICE] Utilizador ID {} ainda não é administrador. Registando perfil...", usuarioId);
 
-                    Atleta atleta = atletaRepository.findById(usuarioId)
-                            .orElseThrow(() -> new ResourceNotFoundException("Utilizador/Atleta não encontrado com o ID: " + usuarioId));
+                    // Busca primeiro no Atleta ou diretamente no Usuario base
+                    Usuario usuarioBase = atletaRepository.findById(usuarioId)
+                            .map(atleta -> (Usuario) atleta)
+                            .orElseGet(() -> usuarioRepository.findById(usuarioId)
+                                    .orElseThrow(() -> new ResourceNotFoundException("Utilizador não encontrado com o ID: " + usuarioId))
+                            );
 
-                    // Instancia novo Administrador preenchendo TODOS os campos herdados obrigatorios de Usuario
+                    // Instancia o novo Administrador copiando os dados do utilizador encontrado
                     Administrador novoAdmin = new Administrador();
-                    novoAdmin.setNome(atleta.getNome());
-                    novoAdmin.setEmail(atleta.getEmail());
-                    novoAdmin.setLogin(atleta.getLogin());
-                    novoAdmin.setSenha(atleta.getSenha());
-                    novoAdmin.setTelefone(atleta.getTelefone());
-                    novoAdmin.setDataCadastro(atleta.getDataCadastro() != null ? atleta.getDataCadastro() : LocalDate.now());
-                    novoAdmin.setStatus(atleta.getStatus() != null ? atleta.getStatus() : true);
+                    novoAdmin.setNome(usuarioBase.getNome());
+                    novoAdmin.setEmail(usuarioBase.getEmail());
+                    novoAdmin.setLogin(usuarioBase.getLogin());
+                    novoAdmin.setSenha(usuarioBase.getSenha());
+                    novoAdmin.setTelefone(usuarioBase.getTelefone());
+                    novoAdmin.setDataCadastro(usuarioBase.getDataCadastro() != null ? usuarioBase.getDataCadastro() : LocalDate.now());
+                    novoAdmin.setStatus(usuarioBase.getStatus() != null ? usuarioBase.getStatus() : true);
 
                     try {
                         Administrador adminSalvo = administradorRepository.save(novoAdmin);
-                        logger.info("[SERVICE] Perfil de Administrador (ID: {}) gerado com sucesso para o usuário.", adminSalvo.getId());
+                        logger.info("[SERVICE] Perfil de Administrador (ID: {}) gerado com sucesso.", adminSalvo.getId());
                         return adminSalvo;
                     } catch (Exception ex) {
-                        logger.error("[SERVICE] Erro ao persistir perfil de Administrador: {}", ex.getMessage(), ex);
-                        throw new BusinessException("Erro ao associar perfil de Administrador ao usuário.");
+                        logger.error("[SERVICE] Erro ao cadastrar perfil de Administrador: {}", ex.getMessage(), ex);
+                        throw new BusinessException("Erro ao associar perfil de Administrador ao utilizador.");
                     }
                 });
 
-        // 4. Associa o Administrador e o Esporte ao novo grupo
+        // 4. Associa Administrador e Esporte ao Grupo Esportivo
         grupoEsportivo.setAdministrador(admin);
         grupoEsportivo.setEsporte(esporte);
 
-        // 5. Define a data de criação do grupo caso não venha informada
         if (grupoEsportivo.getDataCriacao() == null) {
             grupoEsportivo.setDataCriacao(LocalDate.now());
         }
 
         try {
-            // 6. Guarda o grupo esportivo no PostgreSQL
             GrupoEsportivo grupoSalvo = grupoEsportivoRepository.save(grupoEsportivo);
-            logger.info("[SERVICE] Grupo '{}' salvo com sucesso! Administrador responsável: ID {}", grupoSalvo.getNome(), admin.getId());
+            logger.info("[SERVICE] Grupo '{}' salvo com sucesso!", grupoSalvo.getNome());
             return grupoSalvo;
         } catch (Exception e) {
             logger.error("[SERVICE] Erro ao salvar grupo esportivo: {}", e.getMessage(), e);
@@ -92,49 +98,39 @@ public class GrupoEsportivoService implements GrupoEsportivoIService {
         }
     }
 
-    // REGRA: Atleta solicita entrada no grupo
+    // Demais métodos permanecem iguais...
     @Transactional
     public void solicitarEntrada(Long grupoId, Long atletaId) {
-        logger.info("[SERVICE] Atleta ID {} solicitando entrada no Grupo ID {}", atletaId, grupoId);
-
         GrupoEsportivo grupo = grupoEsportivoRepository.findById(grupoId)
                 .orElseThrow(() -> new ResourceNotFoundException("Grupo esportivo não encontrado."));
 
         Atleta atleta = atletaRepository.findById(atletaId)
                 .orElseThrow(() -> new ResourceNotFoundException("Atleta não encontrado."));
 
-        // Se o atleta não estiver na lista de pendentes e não for membro, adiciona a solicitação
         if (!grupo.getSolicitacoesPendentes().contains(atleta) && !grupo.getAtletas().contains(atleta)) {
             grupo.getSolicitacoesPendentes().add(atleta);
             grupoEsportivoRepository.save(grupo);
         }
     }
 
-    // REGRA: Administrador aceita solicitação de atleta
     @Transactional
     public void aceitarAtleta(Long grupoId, Long atletaId, Long adminIdLogado) {
-        logger.info("[SERVICE] Admin ID {} tentando aprovar Atleta ID {} no Grupo ID {}", adminIdLogado, atletaId, grupoId);
-
         GrupoEsportivo grupo = grupoEsportivoRepository.findById(grupoId)
                 .orElseThrow(() -> new ResourceNotFoundException("Grupo esportivo não encontrado."));
 
-        // VALIDAÇÃO DE SEGURANÇA: Apenas o Administrador do grupo pode aceitar
         if (!grupo.getAdministrador().getId().equals(adminIdLogado)) {
-            logger.warn("[SERVICE] Negado: Usuário ID {} não é o admin do grupo {}", adminIdLogado, grupoId);
             throw new BusinessException("Apenas o Administrador deste grupo pode aceitar atletas.");
         }
 
         Atleta atleta = atletaRepository.findById(atletaId)
                 .orElseThrow(() -> new ResourceNotFoundException("Atleta não encontrado."));
 
-        // Remove das solicitações e adiciona aos membros do grupo
         grupo.getSolicitacoesPendentes().remove(atleta);
         if (!grupo.getAtletas().contains(atleta)) {
             grupo.getAtletas().add(atleta);
         }
 
         grupoEsportivoRepository.save(grupo);
-        logger.info("[SERVICE] Atleta ID {} aceito com sucesso no Grupo ID {}", atletaId, grupoId);
     }
 
     @Override
