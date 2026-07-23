@@ -26,4 +26,6 @@ public interface UsuarioRepository
             String login,
             Long id
     );
+
+    Optional<Usuario> findByLoginOrEmail(String login, String email);
 }

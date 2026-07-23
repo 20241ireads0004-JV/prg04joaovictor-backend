@@ -222,17 +222,27 @@ public class UsuarioService implements UsuarioIService {
         }
     }
 
+    /**
+     * Autentica o usuário verificando o login OU email e a senha.
+     */
     @Override
-    public Usuario autenticar(String login, String senha) {
+    public Usuario autenticar(String loginOuEmail, String senha) {
+        logger.info("[SERVICE] Tentativa de autenticação para: {}", loginOuEmail);
 
-        Usuario usuario = usuarioRepository.findByLogin(login)
-                .orElseThrow(() ->
-                        new BusinessException("Login inválido."));
+        // Busca o usuário verificando se o parâmetro coincide com o login OU com o email
+        Usuario usuario = usuarioRepository.findByLoginOrEmail(loginOuEmail, loginOuEmail)
+                .orElseThrow(() -> {
+                    logger.warn("[SERVICE] Credenciais inválidas para: {}", loginOuEmail);
+                    return new BusinessException("Login/Email ou senha inválidos.");
+                });
 
+        // Verifica a senha
         if (!usuario.getSenha().equals(senha)) {
-            throw new BusinessException("Senha inválida.");
+            logger.warn("[SERVICE] Senha incorreta para o usuário: {}", loginOuEmail);
+            throw new BusinessException("Login/Email ou senha inválidos.");
         }
 
+        logger.info("[SERVICE] Usuário autenticado com sucesso: {}", usuario.getLogin());
         return usuario;
     }
 }

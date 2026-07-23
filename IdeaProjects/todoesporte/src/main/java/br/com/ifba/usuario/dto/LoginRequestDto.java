@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 public class LoginRequestDto {
 
     @NotBlank(message = "O login é obrigatório")
-    @Size(min = 4, max = 50, message = "O login deve ter entre 4 e 50 caracteres")
+    @Size(min = 4, max = 100, message = "O identificador deve ter entre 4 e 100 caracteres")
     @JsonProperty("login")
     private String login;
 
