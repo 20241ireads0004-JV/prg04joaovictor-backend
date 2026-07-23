@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping(path = "/equipes")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*")
 public class EquipeController {
 
     private final EquipeIService equipeService;

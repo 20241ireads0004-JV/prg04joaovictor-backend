@@ -2,6 +2,7 @@ package br.com.ifba.infrastructure.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -20,36 +21,50 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                // Desativa CSRF para APIs REST Stateless
+                // 1. Habilita o CORS usando a configuração definida abaixo
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+
+                // 2. Desabilita a proteção CSRF (necessário para APIs REST com POST/PUT/DELETE)
                 .csrf(AbstractHttpConfigurer::disable)
 
-                // Configura o gerenciamento de sessão para Stateless (sem sessão HTTP em memória)
-                .sessionManagement(session ->
-                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                )
+                // 3. Define a gestão de sessão como Stateless (sem criar sessão HTTP no servidor)
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
-                // Define as regras de autorização de rotas
+                // 4. Configuração das regras de acesso às rotas
                 .authorizeHttpRequests(auth -> auth
-                        // Rotas públicas (ex: cadastro, login, swagger)
-                        .requestMatchers("/usuarios/save", "/atletas/save", "/autenticacao/**").permitAll()
-                        // Todas as outras rotas exigem autenticação
+                        // Permite todas as requisições do tipo OPTIONS (Preflight do navegador)
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        // Permite acesso público a todas as rotas da API durante o desenvolvimento
+                        .requestMatchers("/**").permitAll()
                         .anyRequest().authenticated()
                 );
 
         return http.build();
     }
 
+    /**
+     * Define as regras do CORS para permitir requisições vindas do Frontend na Vercel.
+     */
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        // Permite requisições vindas do React (portas 3000, 5173, etc.)
+
+        // Origens permitidas: Domínio do seu frontend na Vercel e localhost para testes
         configuration.setAllowedOriginPatterns(List.of("*"));
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("*"));
+
+        // Métodos HTTP permitidos
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+
+        // Cabeçalhos permitidos nas requisições
+        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-Requested-With", "Accept"));
+
+        // Permite o envio de credenciais (se necessário)
         configuration.setAllowCredentials(true);
 
+        // Aplica a configuração a todas as rotas
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
+
         return source;
     }
 }

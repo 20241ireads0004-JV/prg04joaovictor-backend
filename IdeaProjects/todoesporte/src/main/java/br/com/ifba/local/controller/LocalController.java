@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping(path = "/locais")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*")
 public class LocalController {
 
     private final LocalIService localService;

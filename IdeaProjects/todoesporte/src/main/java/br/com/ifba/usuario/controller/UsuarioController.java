@@ -24,6 +24,7 @@ import java.time.LocalDate;
 @RestController
 @RequestMapping(path = "/usuarios")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*")
 public class UsuarioController {
 
     private final UsuarioIService usuarioService;
