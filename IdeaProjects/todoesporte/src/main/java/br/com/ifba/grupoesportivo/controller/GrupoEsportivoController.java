@@ -22,20 +22,23 @@ public class GrupoEsportivoController {
 
     private final GrupoEsportivoIService grupoEsportivoService;
 
-    // =========================
-    // POST (Com Administrador ID)
-    // =========================
+    // ========================================================
+    // POST: Cria o grupo e torna o usuário criador o Administrador
+    // ========================================================
     @PostMapping(
-            path = "/save/{administradorId}",
+            path = "/save/{usuarioId}",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<GrupoEsportivoGetResponseDto> save(
-            @PathVariable Long administradorId,
+            @PathVariable Long usuarioId,
             @RequestBody @Valid GrupoEsportivoPostRequestDto requestDto
     ) {
         GrupoEsportivo grupoEsportivo = ObjectMapperUtil.map(requestDto, GrupoEsportivo.class);
-        GrupoEsportivo grupoSalvo = grupoEsportivoService.save(grupoEsportivo, administradorId, requestDto.getEsporteNome());
+
+        // Agora passamos o usuarioId no lugar de administradorId
+        GrupoEsportivo grupoSalvo = grupoEsportivoService.save(grupoEsportivo, usuarioId, requestDto.getEsporteNome());
+
         GrupoEsportivoGetResponseDto responseDto = ObjectMapperUtil.map(grupoSalvo, GrupoEsportivoGetResponseDto.class);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);

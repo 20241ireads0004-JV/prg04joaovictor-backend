@@ -33,33 +33,45 @@ public class GrupoEsportivoService implements GrupoEsportivoIService {
 
     @Override
     @Transactional
-    public GrupoEsportivo save(GrupoEsportivo grupoEsportivo, Long administradorId, String esporteNome) {
-        logger.info("[SERVICE] Iniciando cadastro do grupo esportivo: {}", grupoEsportivo.getNome());
+    public GrupoEsportivo save(GrupoEsportivo grupoEsportivo, Long usuarioId, String esporteNome) {
+        logger.info("[SERVICE] Criando grupo '{}' pelo usuário ID {}", grupoEsportivo.getNome(), usuarioId);
 
         // 1. Valida se já existe um grupo com o mesmo nome
         validarNomeUnico(grupoEsportivo);
 
-        // 2. Busca o Administrador na base de dados pelo ID
-        Administrador admin = administradorRepository.findById(administradorId)
-                .orElseThrow(() -> new ResourceNotFoundException("Administrador não encontrado."));
+        // 2. Busca ou cria o perfil de Administrador associado ao Usuário/Atleta criador
+        // Se a sua entidade Administrador for vinculada a um Atleta ou Usuário:
+        Administrador admin = administradorRepository.findById(usuarioId)
+                .orElseGet(() -> {
+                    // Caso o usuário ainda não conste na tabela de administradores,
+                    // convertemos/registramos o atleta como administrador do grupo
+                    Atleta atleta = atletaRepository.findById(usuarioId)
+                            .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado com ID: " + usuarioId));
+
+                    Administrador novoAdmin = new Administrador();
+                    novoAdmin.setId(atleta.getId());
+                    novoAdmin.setNome(atleta.getNome());
+                    // Preencha outros campos necessários da sua entidade Administrador se houver
+                    return administradorRepository.save(novoAdmin);
+                });
 
         // 3. Busca o Esporte na base de dados pelo NOME
         Esporte esporte = esporteRepository.findByNome(esporteNome)
                 .orElseThrow(() -> new ResourceNotFoundException("Esporte '" + esporteNome + "' não encontrado."));
 
-        // 4. Associa o Administrador e o Esporte à entidade GrupoEsportivo
+        // 4. Associa o Administrador criado/encontrado e o Esporte ao Grupo
         grupoEsportivo.setAdministrador(admin);
         grupoEsportivo.setEsporte(esporte);
 
-        // 5. Define a data de criação caso não venha preenchida
+        // 5. Define a data de criação
         if (grupoEsportivo.getDataCriacao() == null) {
             grupoEsportivo.setDataCriacao(LocalDate.now());
         }
 
         try {
-            // 6. Guarda o Grupo Esportivo no banco de dados
+            // 6. Salva o Grupo Esportivo
             GrupoEsportivo grupoSalvo = grupoEsportivoRepository.save(grupoEsportivo);
-            logger.info("[SERVICE] Grupo esportivo cadastrado com sucesso por Admin ID: {} e Esporte: {}", administradorId, esporteNome);
+            logger.info("[SERVICE] Grupo '{}' criado com sucesso! Usuário ID {} agora é o administrador.", grupoSalvo.getNome(), usuarioId);
             return grupoSalvo;
         } catch (Exception e) {
             logger.error("[SERVICE] Erro ao salvar grupo esportivo: {}", e.getMessage());
