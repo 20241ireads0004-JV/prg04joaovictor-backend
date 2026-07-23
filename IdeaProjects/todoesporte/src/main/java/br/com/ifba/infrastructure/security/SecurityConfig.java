@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -19,13 +20,20 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                // Desativa CSRF para facilitar chamadas REST no desenvolvimento
+                // Desativa CSRF para APIs REST Stateless
                 .csrf(AbstractHttpConfigurer::disable)
-                // Habilita a configuração de CORS
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                // Permite acesso a todos os endpoints da API sem autenticação prévia
+
+                // Configura o gerenciamento de sessão para Stateless (sem sessão HTTP em memória)
+                .sessionManagement(session ->
+                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+
+                // Define as regras de autorização de rotas
                 .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll()
+                        // Rotas públicas (ex: cadastro, login, swagger)
+                        .requestMatchers("/usuarios/save", "/atletas/save", "/autenticacao/**").permitAll()
+                        // Todas as outras rotas exigem autenticação
+                        .anyRequest().authenticated()
                 );
 
         return http.build();
