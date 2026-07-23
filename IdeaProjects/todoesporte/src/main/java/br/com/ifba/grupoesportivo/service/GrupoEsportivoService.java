@@ -44,20 +44,32 @@ public class GrupoEsportivoService implements GrupoEsportivoIService {
                 .orElseThrow(() -> new ResourceNotFoundException("Esporte '" + esporteNome + "' não encontrado."));
 
         // 3. Tenta encontrar o Administrador pelo ID.
-        // Se não encontrar na tabela de Administradores, converte/cria o perfil a partir do Atleta
+        // Se não encontrar na tabela de Administradores, copia os dados completos do Atleta
         Administrador admin = administradorRepository.findById(usuarioId)
                 .orElseGet(() -> {
-                    logger.info("[SERVICE] Utilizador ID {} ainda não é administrador. Registando perfil de Administrador...", usuarioId);
+                    logger.info("[SERVICE] Utilizador ID {} não é administrador. Registando perfil de Administrador...", usuarioId);
 
                     Atleta atleta = atletaRepository.findById(usuarioId)
                             .orElseThrow(() -> new ResourceNotFoundException("Utilizador/Atleta não encontrado com o ID: " + usuarioId));
 
+                    // Instancia novo Administrador preenchendo TODOS os campos herdados obrigatorios de Usuario
                     Administrador novoAdmin = new Administrador();
-                    novoAdmin.setId(atleta.getId());
                     novoAdmin.setNome(atleta.getNome());
-                    // Preencha outros campos necessários da entidade Administrador se existirem
+                    novoAdmin.setEmail(atleta.getEmail());
+                    novoAdmin.setLogin(atleta.getLogin());
+                    novoAdmin.setSenha(atleta.getSenha());
+                    novoAdmin.setTelefone(atleta.getTelefone());
+                    novoAdmin.setDataCadastro(atleta.getDataCadastro() != null ? atleta.getDataCadastro() : LocalDate.now());
+                    novoAdmin.setStatus(atleta.getStatus() != null ? atleta.getStatus() : true);
 
-                    return administradorRepository.save(novoAdmin);
+                    try {
+                        Administrador adminSalvo = administradorRepository.save(novoAdmin);
+                        logger.info("[SERVICE] Perfil de Administrador (ID: {}) gerado com sucesso para o usuário.", adminSalvo.getId());
+                        return adminSalvo;
+                    } catch (Exception ex) {
+                        logger.error("[SERVICE] Erro ao persistir perfil de Administrador: {}", ex.getMessage(), ex);
+                        throw new BusinessException("Erro ao associar perfil de Administrador ao usuário.");
+                    }
                 });
 
         // 4. Associa o Administrador e o Esporte ao novo grupo
@@ -75,7 +87,7 @@ public class GrupoEsportivoService implements GrupoEsportivoIService {
             logger.info("[SERVICE] Grupo '{}' salvo com sucesso! Administrador responsável: ID {}", grupoSalvo.getNome(), admin.getId());
             return grupoSalvo;
         } catch (Exception e) {
-            logger.error("[SERVICE] Erro ao salvar grupo esportivo: {}", e.getMessage());
+            logger.error("[SERVICE] Erro ao salvar grupo esportivo: {}", e.getMessage(), e);
             throw new BusinessException("Erro interno ao realizar o cadastro do grupo esportivo.");
         }
     }
