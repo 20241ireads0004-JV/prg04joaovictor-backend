@@ -12,7 +12,7 @@ public interface GrupoEsportivoIService {
      * Este método realiza a validação de
      * unicidade do nome antes de persistir.
      */
-    GrupoEsportivo save(GrupoEsportivo grupoEsportivo, Long administradorId);
+    GrupoEsportivo save(GrupoEsportivo grupoEsportivo, Long administradorId, String esporteNome);
 
     /*
      * Retorna uma lista com todos

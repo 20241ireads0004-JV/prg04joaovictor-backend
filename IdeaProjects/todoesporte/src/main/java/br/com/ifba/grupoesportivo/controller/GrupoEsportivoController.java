@@ -35,7 +35,7 @@ public class GrupoEsportivoController {
             @RequestBody @Valid GrupoEsportivoPostRequestDto requestDto
     ) {
         GrupoEsportivo grupoEsportivo = ObjectMapperUtil.map(requestDto, GrupoEsportivo.class);
-        GrupoEsportivo grupoSalvo = grupoEsportivoService.save(grupoEsportivo, administradorId);
+        GrupoEsportivo grupoSalvo = grupoEsportivoService.save(grupoEsportivo, administradorId, requestDto.getEsporteNome());
         GrupoEsportivoGetResponseDto responseDto = ObjectMapperUtil.map(grupoSalvo, GrupoEsportivoGetResponseDto.class);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);

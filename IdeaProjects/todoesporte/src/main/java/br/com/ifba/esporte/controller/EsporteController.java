@@ -78,8 +78,8 @@ public class EsporteController {
     }
 
     // =========================
-    // GET ALL
-    // =========================
+// GET ALL (Listar Esportes com Paginação)
+// =========================
     @GetMapping(
             path = "/findAll",
             produces = MediaType.APPLICATION_JSON_VALUE
@@ -87,7 +87,7 @@ public class EsporteController {
     public ResponseEntity<Page<EsporteGetResponseDto>> findAll(
             Pageable pageable
     ) {
-
+        // Busca os esportes paginados no service e converte cada entidade para DTO
         Page<EsporteGetResponseDto> responseDto =
                 esporteService.findAll(pageable)
                         .map(esporte ->
@@ -97,6 +97,7 @@ public class EsporteController {
                                 )
                         );
 
+        // Retorna a página de DTOs com status HTTP 200 OK
         return ResponseEntity.status(HttpStatus.OK)
                 .body(responseDto);
     }
