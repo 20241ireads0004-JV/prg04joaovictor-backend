@@ -34,7 +34,7 @@ public interface AdministradorRepository
      * Insere diretamente o ID do usuário já existente na tabela de administradores,
      * promovendo o usuário a Administrador sem recriar o registro na tabela usuarios.
      */
-    @Modifying
+    @Modifying(clearAutomatically = true)
     @Transactional
     @Query(value = "INSERT INTO administradores (id) VALUES (:usuarioId) ON CONFLICT (id) DO NOTHING", nativeQuery = true)
     void promoverUsuarioParaAdministrador(@Param("usuarioId") Long usuarioId);
