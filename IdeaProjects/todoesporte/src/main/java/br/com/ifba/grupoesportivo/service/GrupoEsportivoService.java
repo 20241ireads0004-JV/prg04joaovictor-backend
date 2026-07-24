@@ -37,39 +37,32 @@ public class GrupoEsportivoService implements GrupoEsportivoIService {
     @Override
     @Transactional
     public GrupoEsportivo save(GrupoEsportivo grupoEsportivo, Long usuarioId, String esporteNome) {
-        logger.info("[SERVICE] Criando grupo '{}' pelo utilizador ID {}", grupoEsportivo.getNome(), usuarioId);
+        logger.info("[SERVICE] Criando grupo '{}' para o utilizador ID {}", grupoEsportivo.getNome(), usuarioId);
 
-        // 1. Valida se já existe um grupo com o mesmo nome
+        // 1. Valida nome único do grupo
         validarNomeUnico(grupoEsportivo);
 
-        // 2. Busca o Esporte na base de dados pelo NOME
+        // 2. Busca o Esporte cadastrado
         Esporte esporte = esporteRepository.findByNome(esporteNome)
                 .orElseThrow(() -> new ResourceNotFoundException("Esporte '" + esporteNome + "' não encontrado."));
 
-        // 3. Tenta encontrar o Administrador pelo ID.
-        // Se não encontrar, promove o usuário existente inserindo o ID na tabela 'administradores'
-        Administrador admin = administradorRepository.findById(usuarioId)
-                .orElseGet(() -> {
-                    logger.info("[SERVICE] Utilizador ID {} não é administrador. Promovendo perfil...", usuarioId);
+        // 3. Garante que o utilizador existe na base de dados
+        Usuario usuario = usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new ResourceNotFoundException("Utilizador não encontrado com o ID: " + usuarioId));
 
-                    // Garante que o usuário existe na tabela base de usuários
-                    Usuario usuarioExistente = usuarioRepository.findById(usuarioId)
-                            .orElseThrow(() -> new ResourceNotFoundException("Utilizador não encontrado com o ID: " + usuarioId));
+        // 4. Promove o utilizador a Administrador diretamente no PostgreSQL
+        try {
+            administradorRepository.promoverUsuarioParaAdministrador(usuario.getId());
+        } catch (Exception ex) {
+            logger.error("[SERVICE] Erro ao executar inserção nativa na tabela administradores: {}", ex.getMessage());
+            throw new BusinessException("Erro ao associar perfil de Administrador ao utilizador.");
+        }
 
-                    try {
-                        // Promove o usuário diretamente no PostgreSQL
-                        administradorRepository.promoverUsuarioParaAdministrador(usuarioExistente.getId());
+        // 5. Carrega a entidade Administrador atualizada
+        Administrador admin = administradorRepository.findById(usuario.getId())
+                .orElseThrow(() -> new BusinessException("Falha ao carregar perfil de Administrador."));
 
-                        // Retorna o Administrador devidamente carregado pelo JPA
-                        return administradorRepository.findById(usuarioExistente.getId())
-                                .orElseThrow(() -> new BusinessException("Falha ao carregar perfil de Administrador após promoção."));
-                    } catch (Exception ex) {
-                        logger.error("[SERVICE] Erro ao promover utilizador para Administrador: {}", ex.getMessage(), ex);
-                        throw new BusinessException("Erro ao associar perfil de Administrador ao utilizador.");
-                    }
-                });
-
-        // 4. Associa Administrador e Esporte ao Grupo Esportivo
+        // 6. Vincula e salva o grupo esportivo
         grupoEsportivo.setAdministrador(admin);
         grupoEsportivo.setEsporte(esporte);
 
@@ -77,16 +70,9 @@ public class GrupoEsportivoService implements GrupoEsportivoIService {
             grupoEsportivo.setDataCriacao(LocalDate.now());
         }
 
-        try {
-            GrupoEsportivo grupoSalvo = grupoEsportivoRepository.save(grupoEsportivo);
-            logger.info("[SERVICE] Grupo '{}' salvo com sucesso pelo Admin ID {}!", grupoSalvo.getNome(), admin.getId());
-            return grupoSalvo;
-        } catch (Exception e) {
-            logger.error("[SERVICE] Erro ao salvar grupo esportivo: {}", e.getMessage(), e);
-            throw new BusinessException("Erro interno ao realizar o cadastro do grupo esportivo.");
-        }
+        return grupoEsportivoRepository.save(grupoEsportivo);
     }
-
+    
     // Mantêm-se os outros métodos da classe...
     @Transactional
     public void solicitarEntrada(Long grupoId, Long atletaId) {
