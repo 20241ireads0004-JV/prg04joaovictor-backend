@@ -1,9 +1,15 @@
 package br.com.ifba.eventoesportivo.service;
 
+import br.com.ifba.eventoesportivo.dto.EventoEsportivoPostRequestDto;
 import br.com.ifba.eventoesportivo.entity.EventoEsportivo;
 import br.com.ifba.eventoesportivo.repository.EventoEsportivoRepository;
+import br.com.ifba.grupoesportivo.entity.GrupoEsportivo;
+import br.com.ifba.grupoesportivo.repository.GrupoEsportivoRepository;
 import br.com.ifba.infrastructure.exception.BusinessException;
 import br.com.ifba.infrastructure.exception.ResourceNotFoundException;
+import br.com.ifba.infrastructure.util.ObjectMapperUtil;
+import br.com.ifba.local.entity.Local;
+import br.com.ifba.local.repository.LocalRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,37 +27,48 @@ public class EventoEsportivoService implements EventoEsportivoIService {
 
     private final EventoEsportivoRepository eventoEsportivoRepository;
 
+    // Injeção dos repositórios necessários para buscar o Local e o Grupo
+    private final LocalRepository localRepository;
+    private final GrupoEsportivoRepository grupoEsportivoRepository;
+
     @Override
     @Transactional
-    public EventoEsportivo save(EventoEsportivo eventoEsportivo) {
+    public EventoEsportivo save(EventoEsportivoPostRequestDto dto) {
 
-        logger.info(
-                "[SERVICE] Cadastrando novo evento esportivo."
-        );
+        logger.info("[SERVICE] Cadastrando novo evento esportivo.");
 
         try {
+            // 1. Mapeia os campos simples do DTO para a entidade EventoEsportivo
+            EventoEsportivo eventoEsportivo = ObjectMapperUtil.map(dto, EventoEsportivo.class);
 
-            EventoEsportivo eventoSalvo =
-                    eventoEsportivoRepository.save(eventoEsportivo);
+            // 2. Associa o Local buscando pelo localId recebido no DTO
+            if (dto.getLocalId() != null) {
+                Local local = localRepository.findById(dto.getLocalId())
+                        .orElseThrow(() -> new ResourceNotFoundException("Local não encontrado com o ID: " + dto.getLocalId()));
+                eventoEsportivo.setLocal(local);
+            }
 
-            logger.info(
-                    "[SERVICE] Evento esportivo cadastrado com sucesso."
-            );
+            // 3. Associa o Grupo Esportivo buscando pelo grupoId recebido no DTO
+            if (dto.getGrupoId() != null) {
+                GrupoEsportivo grupo = grupoEsportivoRepository.findById(dto.getGrupoId())
+                        .orElseThrow(() -> new ResourceNotFoundException("Grupo Esportivo não encontrado com o ID: " + dto.getGrupoId()));
+                eventoEsportivo.setGrupoEsportivo(grupo);
+            }
+
+            // 4. Salva o evento com os relacionamentos devidamente preenchidos
+            EventoEsportivo eventoSalvo = eventoEsportivoRepository.save(eventoEsportivo);
+
+            logger.info("[SERVICE] Evento esportivo cadastrado com sucesso.");
 
             return eventoSalvo;
 
+        } catch (ResourceNotFoundException e) {
+            logger.error("[SERVICE] Recurso não encontrado ao salvar evento: {}", e.getMessage());
+            throw e;
         } catch (Exception e) {
-
-            logger.error(
-                    "[SERVICE] Erro ao salvar evento esportivo: {}",
-                    e.getMessage()
-            );
-
-            throw new BusinessException(
-                    "Erro interno ao cadastrar o evento esportivo."
-            );
+            logger.error("[SERVICE] Erro ao salvar evento esportivo: {}", e.getMessage());
+            throw new BusinessException("Erro interno ao cadastrar o evento esportivo.");
         }
-
     }
 
     @Override
@@ -106,49 +123,37 @@ public class EventoEsportivoService implements EventoEsportivoIService {
 
     @Override
     @Transactional
-    public EventoEsportivo update(
-            Long id,
-            EventoEsportivo eventoEsportivo
-    ) {
+    public EventoEsportivo update(Long id, EventoEsportivoPostRequestDto dto) {
 
-        logger.info(
-                "[SERVICE] Atualizando evento esportivo ID: {}",
-                id
-        );
+        logger.info("[SERVICE] Atualizando evento esportivo ID: {}", id);
 
-        EventoEsportivo eventoExistente =
-                eventoEsportivoRepository.findById(id)
-                        .orElseThrow(() ->
-                                new ResourceNotFoundException(
-                                        "Evento esportivo não encontrado."
-                                )
-                        );
+        EventoEsportivo eventoExistente = eventoEsportivoRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Evento esportivo não encontrado."));
 
-        eventoExistente.setData(
-                eventoEsportivo.getData()
-        );
+        // Atualização dos atributos simples
+        eventoExistente.setData(dto.getData());
+        eventoExistente.setHorario(dto.getHorario());
+        eventoExistente.setVagas(dto.getVagas());
+        eventoExistente.setDescricao(dto.getDescricao());
 
-        eventoExistente.setHorario(
-                eventoEsportivo.getHorario()
-        );
+        // Atualização dos relacionamentos (Local e Grupo), se informados
+        if (dto.getLocalId() != null) {
+            Local local = localRepository.findById(dto.getLocalId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Local não encontrado com o ID: " + dto.getLocalId()));
+            eventoExistente.setLocal(local);
+        }
 
-        eventoExistente.setVagas(
-                eventoEsportivo.getVagas()
-        );
+        if (dto.getGrupoId() != null) {
+            GrupoEsportivo grupo = grupoEsportivoRepository.findById(dto.getGrupoId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Grupo Esportivo não encontrado com o ID: " + dto.getGrupoId()));
+            eventoExistente.setGrupoEsportivo(grupo);
+        }
 
-        eventoExistente.setDescricao(
-                eventoEsportivo.getDescricao()
-        );
+        EventoEsportivo eventoAtualizado = eventoEsportivoRepository.save(eventoExistente);
 
-        EventoEsportivo eventoAtualizado =
-                eventoEsportivoRepository.save(eventoExistente);
-
-        logger.info(
-                "[SERVICE] Evento esportivo atualizado com sucesso."
-        );
+        logger.info("[SERVICE] Evento esportivo atualizado com sucesso.");
 
         return eventoAtualizado;
-
     }
 
 }

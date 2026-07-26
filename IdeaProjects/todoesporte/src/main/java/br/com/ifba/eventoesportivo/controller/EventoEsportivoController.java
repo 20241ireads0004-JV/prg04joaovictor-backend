@@ -22,12 +22,6 @@ public class EventoEsportivoController {
 
     private final EventoEsportivoIService eventoEsportivoService;
 
-    /**
-     * @author João Victor
-     * @apiNote Endpoint criado desde a versão V1.0.1
-     * Realiza o cadastro de um novo evento esportivo.
-     */
-
     // =========================
     // POST
     // =========================
@@ -40,13 +34,8 @@ public class EventoEsportivoController {
             @RequestBody @Valid EventoEsportivoPostRequestDto requestDto
     ) {
 
-        EventoEsportivo eventoEsportivo = ObjectMapperUtil.map(
-                requestDto,
-                EventoEsportivo.class
-        );
-
-        EventoEsportivo eventoSalvo =
-                eventoEsportivoService.save(eventoEsportivo);
+        // Passamos o DTO diretamente para o Service tratar o salvamento e vincular os relacionamentos
+        EventoEsportivo eventoSalvo = eventoEsportivoService.save(requestDto);
 
         EventoEsportivoGetResponseDto responseDto =
                 ObjectMapperUtil.map(
@@ -116,13 +105,8 @@ public class EventoEsportivoController {
             @RequestBody @Valid EventoEsportivoPostRequestDto dto
     ) {
 
-        EventoEsportivo eventoEsportivo = ObjectMapperUtil.map(
-                dto,
-                EventoEsportivo.class
-        );
-
-        EventoEsportivo eventoAtualizado =
-                eventoEsportivoService.update(id, eventoEsportivo);
+        // Passamos o ID e o DTO para o Service realizar a atualização
+        EventoEsportivo eventoAtualizado = eventoEsportivoService.update(id, dto);
 
         EventoEsportivoGetResponseDto responseDto =
                 ObjectMapperUtil.map(

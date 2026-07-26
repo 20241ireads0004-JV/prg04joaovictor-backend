@@ -1,5 +1,6 @@
 package br.com.ifba.eventoesportivo.service;
 
+import br.com.ifba.eventoesportivo.dto.EventoEsportivoPostRequestDto;
 import br.com.ifba.eventoesportivo.entity.EventoEsportivo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -9,7 +10,7 @@ public interface EventoEsportivoIService {
     /*
      * Salva um novo evento esportivo.
      */
-    EventoEsportivo save(EventoEsportivo eventoEsportivo);
+    EventoEsportivo save(EventoEsportivoPostRequestDto dto);
 
     /*
      * Retorna todos os eventos esportivos
@@ -30,6 +31,6 @@ public interface EventoEsportivoIService {
     /*
      * Atualiza um evento esportivo.
      */
-    EventoEsportivo update(Long id, EventoEsportivo eventoEsportivo);
+    EventoEsportivo update(Long id, EventoEsportivoPostRequestDto dto);
 
 }
