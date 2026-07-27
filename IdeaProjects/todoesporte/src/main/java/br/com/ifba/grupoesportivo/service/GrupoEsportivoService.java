@@ -134,16 +134,34 @@ public class GrupoEsportivoService implements GrupoEsportivoIService {
     @Override
     @Transactional
     public GrupoEsportivo update(Long id, GrupoEsportivo grupoEsportivo) {
+        logger.info("[SERVICE] Atualizando grupo esportivo ID {}", id);
+
+        // 1. Busca o grupo existente no banco de dados
         GrupoEsportivo grupoExistente = findById(id);
 
-        if (grupoEsportivoRepository.existsByNomeAndIdNot(grupoEsportivo.getNome(), id)) {
+        // 2. Valida se o novo nome já está em uso por OUTRO grupo
+        if (grupoEsportivo.getNome() != null &&
+                !grupoExistente.getNome().equalsIgnoreCase(grupoEsportivo.getNome()) &&
+                grupoEsportivoRepository.existsByNomeAndIdNot(grupoEsportivo.getNome(), id)) {
+
+            logger.error("[SERVICE] Já existe outro grupo cadastrado com o nome: {}", grupoEsportivo.getNome());
             throw new BusinessException("Já existe um grupo esportivo cadastrado com esse nome.");
         }
 
-        grupoExistente.setNome(grupoEsportivo.getNome());
-        grupoExistente.setDescricao(grupoEsportivo.getDescricao());
+        // 3. Atualiza os campos permitidos
+        if (grupoEsportivo.getNome() != null && !grupoEsportivo.getNome().isBlank()) {
+            grupoExistente.setNome(grupoEsportivo.getNome());
+        }
 
-        return grupoEsportivoRepository.save(grupoExistente);
+        if (grupoEsportivo.getDescricao() != null && !grupoEsportivo.getDescricao().isBlank()) {
+            grupoExistente.setDescricao(grupoEsportivo.getDescricao());
+        }
+
+        // 4. Salva e retorna o grupo atualizado
+        GrupoEsportivo grupoAtualizado = grupoEsportivoRepository.save(grupoExistente);
+        logger.info("[SERVICE] Grupo esportivo ID {} atualizado com sucesso!", id);
+
+        return grupoAtualizado;
     }
 
     private void validarNomeUnico(GrupoEsportivo grupoEsportivo) {
